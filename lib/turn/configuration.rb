@@ -177,6 +177,9 @@ module Turn
       @reporter ||= (
         opts = { :trace=>trace, :natural=>natural? }
         case format
+        when :snuggs
+          require 'turn/reporters/snuggs_reporter'
+          Turn::SnuggsReporter.new($stdout, opts)
         when :marshal
           require 'turn/reporters/marshal_reporter'
           Turn::MarshalReporter.new($stdout, opts)
