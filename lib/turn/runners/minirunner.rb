@@ -13,7 +13,9 @@ module Turn
 
     #
     def initialize
-      @turn_config = Turn.config
+      @turn_config   = Turn.config
+      @turn_errors   = []
+      @turn_failures = []
 
       super()
 
@@ -58,6 +60,10 @@ module Turn
         suites = suites.select{ |suite| @turn_config.matchcase =~ suite.name }
       end
 
+      puts "\n\n\n"
+      puts suites.inspect
+      puts "\n\n\n"
+
       result = suites.map { |suite| _run_suite(suite, type) }
 
       turn_reporter.finish_suite(@turn_suite)
@@ -92,7 +98,10 @@ module Turn
 
         if result == "."
           turn_reporter.pass
+        else
+          turn_reporter.add_problem @turn_test
         end
+
 
         turn_reporter.finish_test(@turn_test)
 
@@ -103,6 +112,7 @@ module Turn
 
       turn_reporter.finish_case(@turn_case)
 
+      turn_reporter.print_problems
       return assertions.size, assertions.inject(0) { |sum, n| sum + n }
     end
 
