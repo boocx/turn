@@ -2,58 +2,51 @@ require 'turn/reporter'
 require 'stringio'
 
 module Turn
-
-  # Outline Reporter is Turn's Original.
-  #
-  #--
   # TODO: Should we fit reporter output to width of console?
   #       y8: Yes. we should, but it's a kinda tricky, if you want to make it
-  #           cross-platform. (See https://github.com/cldwalker/hirb/blob/master/lib/hirb/util.rb#L61)
-  # TODO: Running percentages?
-  # TODO: Cleanup me!
-  #++
-  class SnuggsReporter < Reporter
+  #           cross-platform.
+  # (See https://github.com/cldwalker/hirb/blob/master/lib/hirb/util.rb#L61)
 
-    #
+  class SnuggsReporter < Reporter
     TAB_SIZE = 8
     TAB = "  "
-    #
-    def start_suite(suite)
+
+    def start_suite suite
       @problems = []
-      @suite  = suite
-      @time   = Time.now
+      @suite    = suite
+      @time     = Time.now
+
       # @FIXME (y8): Why we need to capture stdout and stderr?
+
       @stdout = StringIO.new
       @stderr = StringIO.new
+
       #files  = suite.collect{ |s| s.file }.join(' ')
-      puts '=' * 78
+
+      io.puts '=' * 78
+
       if suite.seed
-        io.puts "SNUGGS SUITE #{suite.name} (SEED #{suite.seed})"
+        io.puts "MorSnuggs #{suite.name} (SEED #{suite.seed})"
       else
-        io.puts "SUITE #{suite.name}"
+        io.puts "MorSnuggs #{suite.name}"
       end
-      puts '=' * 78
+
+      io.puts '=' * 78
     end
 
-    #
-    def start_case(kase)
+    def start_case kase
       @indentation = ""
+
       formatted_kase_name = kase.name.split('::').inject("") do |result, desc|
         result       += "\n#{ @indentation + desc }"
         @indentation += TAB
         result
       end
 
-      io.puts(Colorize.bold(formatted_kase_name)) if kase.size > 0
+      io.puts( formatted_kase_name.bold ) if kase.size > 0
     end
 
-    #
-    def start_test(test)
-      #if @file != test.file
-      #  @file = test.file
-      #  io.puts(test.file)
-      #end
-
+    def start_test test
       # @FIXME: Should we move naturalized_name to test itself?
       name = naturalized_name(test).gsub(/^\s\d+/, @indentation)
 
@@ -66,19 +59,17 @@ module Turn
       $stderr = @stderr unless $DEBUG
     end
 
-    #
-    def pass(message=nil)
+    def pass message=nil
       io.puts " %s %s" % [ticktock, PASS]
 
       if message
-        message = Colorize.magenta(message)
+        message = message.magenta
         message = message.to_s.tabto(TAB_SIZE)
         io.puts(message)
       end
     end
 
-    #
-    def fail(assertion)
+    def fail assertion
       io.puts " %s %s" % [ticktock, FAIL]
 
       message = []
@@ -98,23 +89,20 @@ module Turn
       show_captured_output
     end
 
-    #
-    def error(exception)
+    def error exception
       io.puts " %s %s" % [ticktock, ERROR]
 
       message = []
-      message << Colorize.bold(exception.message)
+      message << exception.message.bold
       message << "Exception `#{exception.class}' at:"
       message << clean_backtrace(exception.backtrace).join("\n")
       message = message.join("\n")
 
       io.puts(message.tabto(TAB_SIZE))
 
-      #io.puts "STDERR:".tabto(TAB_SIZE)
       show_captured_output
     end
 
-    #
     def skip(exception)
       io.puts " %s %s" % [ticktock, SKIP]
 
@@ -125,7 +113,6 @@ module Turn
       show_captured_output
     end
 
-    #
     def finish_test(test)
       $stdout = STDOUT
       $stderr = STDERR
@@ -134,44 +121,24 @@ module Turn
     def add_problem(problem)
       @problems << problem
     end
-    #
+
     def print_problems
-#     puts "\n\n\nPROBLEMS"
-#     puts "#{@problems.join('\n')}"
-#     puts "\n\n\n"
     end
 
-    #
     def show_captured_output
       show_captured_stdout
-      #show_captured_stderr
     end
 
-    #
     def show_captured_stdout
       @stdout.rewind
+
       return if @stdout.eof?
+
       STDOUT.puts(<<-output.tabto(8))
 \nSTDOUT:
 #{@stdout.read}
       output
     end
-
-# No longer used b/c of error messages are fairly extraneous.
-=begin
-    def show_captured_stderr
-      @stderr.rewind
-      return if @stderr.eof?
-      STDOUT.puts(<<-output.tabto(8))
-\nSTDERR:
-#{@stderr.read}
-      output
-    end
-=end
-
-    #
-    #def finish_case(kase)
-    #end
 
     # TODO: pending (skip) counts
     def finish_suite(suite)
@@ -183,11 +150,8 @@ module Turn
       skips      = suite.count_skips
 
       bar = '=' * 78
-      # @FIXME: Remove this, since Colorize already take care of colorize?
-      if colorize?
-        bar = if pass == total then Colorize.green(bar)
-              else Colorize.red(bar) end
-      end
+
+      bar = pass == total ? bar.green : bar.red
 
       # @FIXME: Should we add suite.runtime, instead if this lame time calculations?
       tally = [total, assertions, (Time.new - @time)]
@@ -197,7 +161,5 @@ module Turn
       io.puts "  total: %d tests with %d assertions in %f seconds" % tally
       io.puts bar
     end
-
   end
-
 end
