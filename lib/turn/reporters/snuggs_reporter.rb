@@ -16,6 +16,8 @@ module Turn
       @suite    = suite
       @time     = Time.now
 
+      @squasher = {}
+
       # @FIXME (y8): Why we need to capture stdout and stderr?
 
       @stdout = StringIO.new
@@ -24,33 +26,41 @@ module Turn
       #files  = suite.collect{ |s| s.file }.join(' ')
 
       io.puts '=' * 78
+    end
 
-      if suite.seed
-        io.puts "MorSnuggs #{suite.name} (SEED #{suite.seed})"
-      else
-        io.puts "MorSnuggs #{suite.name}"
-      end
+    def indent
+      '  ' * ( @contexts.length - 1 )
+    end
 
-      io.puts '=' * 78
+    def hash
+      @contexts.collect { |c| c.hash }.join(':')
+    end
+
+    def squash
+      @squasher[hash] = true
+    end
+
+    def squashed
+      @squasher[hash]
     end
 
     def start_case kase
-      @indentation = ""
+      @contexts = []
 
-      formatted_kase_name = kase.name.split('::').inject("") do |result, desc|
-        result       += "\n#{ @indentation + desc }"
-        @indentation += TAB
-        result
+      kase.name.split('::').each do |context|
+        @contexts << context
+        unless squashed
+          squash
+          io.puts indent + context
+        end
       end
-
-      io.puts( formatted_kase_name.bold ) if kase.size > 0
     end
 
     def start_test test
       # @FIXME: Should we move naturalized_name to test itself?
-      name = naturalized_name(test).gsub(/^\s\d+/, @indentation)
+      @contexts << naturalized_name(test).gsub(/^\s\d+/, '')
 
-      io.print "%-57s" % name
+      io.print "%-74s" % ( indent + @contexts.last )
 
       @stdout.rewind
       @stderr.rewind
@@ -60,7 +70,8 @@ module Turn
     end
 
     def pass message=nil
-      io.puts " %s %s" % [ticktock, PASS]
+      io.puts '%s' % PASS
+      io.puts
 
       if message
         message = message.magenta
@@ -149,17 +160,18 @@ module Turn
       errors     = suite.count_errors
       skips      = suite.count_skips
 
+      passed = passes == total
+
       bar = '=' * 78
 
-      bar = pass == total ? bar.green : bar.red
+      bottom = [bar]
+      bottom << "  pass: %d,  fail: %d,  error: %d, skip: %d" % [passes, failures, errors, skips]
+      bottom << "  total: %d tests with %d assertions in %f seconds" % [total, assertions, (Time.new - @time)]
+      bottom << bar
 
-      # @FIXME: Should we add suite.runtime, instead if this lame time calculations?
-      tally = [total, assertions, (Time.new - @time)]
-
-      io.puts bar
-      io.puts "  pass: %d,  fail: %d,  error: %d, skip: %d" % [passes, failures, errors, skips]
-      io.puts "  total: %d tests with %d assertions in %f seconds" % tally
-      io.puts bar
+      bottom.each do |line|
+        io.puts passed ? line.green : line.red
+      end
     end
   end
 end
