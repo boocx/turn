@@ -84,7 +84,7 @@ module Turn
       io.puts " %s %s" % [ticktock, FAIL]
 
       message = []
-      message << Colorize.bold(assertion.message.to_s)
+      message << ANSI.bold{assertion.message.to_s}
       message << "Assertion at:"
       message << clean_backtrace(assertion.backtrace).join("\n")
       message = message.join("\n")
@@ -104,7 +104,7 @@ module Turn
       io.puts " %s %s" % [ticktock, ERROR]
 
       message = []
-      message << exception.message.bold
+      message << ANSI.bold{exception.message}
       message << "Exception `#{exception.class}' at:"
       message << clean_backtrace(exception.backtrace).join("\n")
       message = message.join("\n")
@@ -170,7 +170,7 @@ module Turn
       bottom << bar
 
       bottom.each do |line|
-        io.puts passed ? line.green : line.red
+        io.puts passed ? ANSI.green{line} : ANSI.red{line}
       end
     end
   end
