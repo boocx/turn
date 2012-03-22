@@ -179,11 +179,11 @@ module Turn
               end
 
       bottom.each do |line|
-        io.puts color(line, color)
+        io.puts paint(line, color)
       end
     end
 
-    def color line, color
+    def paint line, color
       ANSI.__send__ color { line }
     end
   end
