@@ -184,7 +184,7 @@ module Turn
     end
 
     def paint line, color
-      ANSI.__send__ color { line }
+      ANSI.__send__(color) { line }
     end
   end
 end
