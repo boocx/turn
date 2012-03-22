@@ -65,7 +65,7 @@ module Turn
 
     # Did all tests/assertion pass?
     def pass?
-      not(fail? or error?)
+      not(fail? or error? or skip?)
     end
 
     def count_tests
@@ -84,6 +84,10 @@ module Turn
 
     def count_passes
       sum = 0; tests.each{ |t| sum += 1 if t.pass? }; sum
+    end
+
+    def skip?
+      count_skips > 0
     end
 
     def count_skips
