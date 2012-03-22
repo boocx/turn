@@ -84,7 +84,8 @@ module Turn
     end
 
     def fail assertion
-      io.puts " %s %s" % [ticktock, FAIL]
+      io.puts FAIL
+      io.puts
 
       message = []
       message << ANSI.bold { assertion.message.to_s }
@@ -104,7 +105,8 @@ module Turn
     end
 
     def error exception
-      io.puts " %s %s" % [ticktock, ERROR]
+      io.puts ERROR
+      io.puts
 
       message = []
       message << ANSI.bold { exception.message }
@@ -118,7 +120,7 @@ module Turn
     end
 
     def skip(exception)
-      io.puts " %s %s" % [ ticktock, ANSI.yellow { 'SKIP' } ]
+      io.puts ANSI.yellow { 'SKIP' }
 
       message = exception.message
 
@@ -170,9 +172,9 @@ module Turn
       bottom << "  total: %d tests with %d assertions in %f seconds" % [total, assertions, (Time.new - @time)]
       bottom << bar
 
-      color = if passes == total
+      color = if ( failures + skips + errors ) == 0
                 :green
-              elsif errors == 0
+              elsif ( failures + errors ) == 0
                 :yellow
               else
                 :red
