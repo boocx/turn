@@ -70,7 +70,7 @@ module Turn
 
     # Convenience methods --this is what is typcially wanted.
     def counts
-      return count_tests, count_assertions, count_failures, count_errors ,count_skips
+      return count_tests, count_assertions, count_failures, count_errors, count_skips
     end
 
     def each(&block)
@@ -87,8 +87,7 @@ module Turn
     end
 
     def passed?
-      (count_failures == 0 && count_errors == 0)
+      (count_failures == 0 && count_errors == 0 && count_skips == 0)
     end
   end
-
 end
