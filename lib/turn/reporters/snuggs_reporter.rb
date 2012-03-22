@@ -16,7 +16,7 @@ module Turn
       @suite    = suite
       @time     = Time.now
 
-      @squasher = {}
+      @squasher = { }
 
       # @FIXME (y8): Why we need to capture stdout and stderr?
 
@@ -48,7 +48,10 @@ module Turn
       @contexts = []
 
       kase.name.split('::').each do |context|
+        context.gsub! /^\s+/,''
+
         @contexts << context
+
         unless squashed
           squash
           io.puts indent + context
@@ -70,7 +73,7 @@ module Turn
     end
 
     def pass message=nil
-      io.puts '%s' % PASS
+      io.puts PASS
       io.puts
 
       if message
@@ -84,7 +87,7 @@ module Turn
       io.puts " %s %s" % [ticktock, FAIL]
 
       message = []
-      message << ANSI.bold{assertion.message.to_s}
+      message << ANSI.bold { assertion.message.to_s }
       message << "Assertion at:"
       message << clean_backtrace(assertion.backtrace).join("\n")
       message = message.join("\n")
@@ -104,7 +107,7 @@ module Turn
       io.puts " %s %s" % [ticktock, ERROR]
 
       message = []
-      message << ANSI.bold{exception.message}
+      message << ANSI.bold { exception.message }
       message << "Exception `#{exception.class}' at:"
       message << clean_backtrace(exception.backtrace).join("\n")
       message = message.join("\n")
@@ -115,7 +118,7 @@ module Turn
     end
 
     def skip(exception)
-      io.puts " %s %s" % [ticktock, SKIP]
+      io.puts " %s %s" % [ ticktock, ANSI.yellow { 'SKIP' } ]
 
       message = exception.message
 
@@ -160,8 +163,6 @@ module Turn
       errors     = suite.count_errors
       skips      = suite.count_skips
 
-      passed = passes == total
-
       bar = '=' * 78
 
       bottom = [bar]
@@ -169,9 +170,21 @@ module Turn
       bottom << "  total: %d tests with %d assertions in %f seconds" % [total, assertions, (Time.new - @time)]
       bottom << bar
 
+      color = if passes == total
+                :green
+              elsif errors == 0
+                :yellow
+              else
+                :red
+              end
+
       bottom.each do |line|
-        io.puts passed ? ANSI.green{line} : ANSI.red{line}
+        io.puts color(line, color)
       end
+    end
+
+    def color line, color
+      ANSI.__send__ color { line }
     end
   end
 end
