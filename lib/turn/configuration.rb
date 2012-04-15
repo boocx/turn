@@ -240,6 +240,11 @@ module Turn
     end
 
     #
+    def reporter_options
+      { :trace=>trace, :natural=>natural?, :verbose=>verbose?, :mark=>mark }
+    end
+
+    #
     def environment_format
       ENV['rpt']
     end
