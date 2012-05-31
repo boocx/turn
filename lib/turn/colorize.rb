@@ -74,16 +74,15 @@ module Turn
     end
 
     def self.fail(string)
-      colorize? ? ::ANSI::Code.red{ string } : string
-    end
-
-    def self.error(string)
-      #colorize? ? ::ANSI::Code.white_on_red{ string } : string
       colorize? ? ::ANSI::Code.yellow{ string } : string
     end
 
+    def self.error(string)
+      colorize? ? ::ANSI::Code.red{ string } : string
+    end
+
     def self.skip(string)
-      colorize? ? ::ANSI::Code.cyan{ string } : string
+      colorize? ? ::ANSI::Code.blue{ string } : string
     end
 
     def colorize?
