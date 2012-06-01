@@ -95,12 +95,6 @@ module Turn
 
       io.puts(message.tabto(TAB_SIZE))
 
-      #unless backtrace.empty?
-      #  io.puts "Assertion at".tabto(TAB_SIZE)
-      #  io.puts backtrace.map{|l| l.tabto(TAB_SIZE)}.join("\n")
-      #end
-
-      #io.puts "STDERR:".tabto(TAB_SIZE)
       show_captured_output
     end
 
@@ -124,7 +118,7 @@ module Turn
 
       message = exception.message
 
-      io.puts(message.tabto(8))
+      io.puts( '  ' * ( @contexts.length ) + message + "\n\n" )
 
       show_captured_output
     end
