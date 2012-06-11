@@ -94,8 +94,6 @@ module Turn
       message = message.join("\n")
 
       io.puts(message.tabto(TAB_SIZE))
-
-      show_captured_output
     end
 
     def error exception
@@ -109,8 +107,6 @@ module Turn
       message = message.join("\n")
 
       io.puts(message.tabto(TAB_SIZE))
-
-      show_captured_output
     end
 
     def skip(exception)
@@ -119,11 +115,11 @@ module Turn
       message = exception.message
 
       io.puts( '  ' * ( @contexts.length ) + message + "\n\n" )
-
-      show_captured_output
     end
 
     def finish_test(test)
+      show_captured_output
+
       $stdout = STDOUT
       $stderr = STDERR
     end
@@ -136,21 +132,32 @@ module Turn
     end
 
     def show_captured_output
-      show_captured_stdout
-    end
-
-    def show_captured_stdout
       @stdout.rewind
 
-      return if @stdout.eof?
+      unless @stdout.eof?
+        out = <<-output
 
-      STDOUT.puts(<<-output.tabto(8))
-\nSTDOUT:
+STDOUT:
 #{@stdout.read}
-      output
+        output
+
+        STDOUT.puts out.tabto(8)
+
+      end
+
+      @stderr.rewind
+
+      unless @stderr.eof?
+        out = <<-output
+
+STDERR:
+#{@stderr.read}
+        output
+
+        STDERR.puts out.tabto(8)
+      end
     end
 
-    # TODO: pending (skip) counts
     def finish_suite(suite)
       total      = suite.count_tests
       passes     = suite.count_passes
