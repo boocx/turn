@@ -20,6 +20,7 @@ lib/turn/reporters/marshal_reporter.rb
 lib/turn/reporters/outline_reporter.rb
 lib/turn/reporters/pretty_reporter.rb
 lib/turn/reporters/progress_reporter.rb
+lib/turn/reporters/snuggs_reporter.rb
 lib/turn/runners/crossrunner.rb
 lib/turn/runners/isorunner.rb
 lib/turn/runners/loadrunner.rb

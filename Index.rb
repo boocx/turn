@@ -4,8 +4,8 @@ require File.dirname(__FILE__) + '/lib/turn/version'
 
 version       Turn::VERSION  #File.read('Version.txt').strip
 
-name         'turn'
-title        'Turn'
+name         'boocx-turn'
+title        'Turn customized for Boocx'
 summary      'Test Reporters (New) -- new output formats for Testing'
 
 description "Turn provides a set of alternative runners for MiniTest, both colorful and informative."
@@ -29,6 +29,4 @@ resources(
 copyrights [
   '2008 Tim Pease (MIT)'
 ]
-
-
 
