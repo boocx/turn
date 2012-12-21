@@ -38,7 +38,7 @@ customs: []
 paths:
   lib:
   - lib
-version: 0.9.6
+version: 0.9.7
 name: boocx-turn
 title: Turn
 summary: Test Reporters (New) -- new output formats for Testing
