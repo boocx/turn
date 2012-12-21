@@ -44,11 +44,15 @@ module Turn
       @squasher[hash]
     end
 
+    def trim_beginning test
+      test.gsub /^\s*\d+\s*/, ''
+    end
+
     def start_case kase
       @contexts = []
 
       kase.name.split('::').each do |context|
-        context.gsub! /^\s+/,''
+        context = trim_beginning context
 
         @contexts << context
 
@@ -60,8 +64,11 @@ module Turn
     end
 
     def start_test test
-      # @FIXME: Should we move naturalized_name to test itself?
-      @contexts << naturalized_name(test).gsub(/^\s\d+/, '')
+      test = naturalized_name test
+
+      test = trim_beginning test
+
+      @contexts << test
 
       io.print "%-74s" % ( indent + @contexts.last )
 
