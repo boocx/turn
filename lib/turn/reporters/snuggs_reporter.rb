@@ -18,8 +18,6 @@ module Turn
 
       @squasher = { }
 
-      # @FIXME (y8): Why we need to capture stdout and stderr?
-
       @stdout = StringIO.new
       @stderr = StringIO.new
 
@@ -72,8 +70,8 @@ module Turn
 
       io.print "%-74s" % ( indent + @contexts.last )
 
-      @stdout.rewind
-      @stderr.rewind
+      @stdout = StringIO.new
+      @stderr = StringIO.new
 
       $stdout = @stdout
       $stderr = @stderr unless $DEBUG
